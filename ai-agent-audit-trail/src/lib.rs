@@ -1,6 +1,6 @@
 //! The compiled listing from the zatona.dev post "AI Agent Audit Trail:
 //! What to Hash, What to Anchor, What to Bind to the Frame"
-//! (<https://zatona.dev/blog/ai-agent-audit-trail>), Section 7.
+//! (<https://zatona.dev/blog/ai-agent-audit-trail>), Section 8.
 //!
 //! `listings/block-1.rs` is the byte-identical text of the post's one
 //! fenced ```rust block (extraction method and checksum in
@@ -26,10 +26,12 @@
 //! happen to run — the test asserts the write side's `leaf` equals the
 //! read side's anchored root.
 //!
-//! What is not tested: the post says the 2.1 witnessed-head receipt
-//! members are not yet implemented in `atl-core`; this crate does not
-//! exercise them either. `status_at`-style revocation checking has no
-//! equivalent call in this listing — `atl-core`'s anchor verification does
-//! not fetch a CRL or OCSP response, and neither does this crate.
+//! What is not tested: the post describes the receipt defined by ATL's
+//! published 2.0.0 specification (`atl-core` 6e652ed declares
+//! `PROTOCOL_VERSION = "2.0.0"`); there is no published 2.1, so nothing
+//! version-gated is left untested here. `status_at`-style revocation
+//! checking has no equivalent call in this listing — `atl-core`'s anchor
+//! verification does not fetch a CRL or OCSP response, and neither does
+//! this crate.
 
 include!(concat!(env!("OUT_DIR"), "/wrapped_block_1.rs"));

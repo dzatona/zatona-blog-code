@@ -25,7 +25,7 @@ fn main() {
         .expect("listings/block-1.rs must exist: it is the post's listing, not generated");
 
     let wrapped = format!(
-        "/// Section 7's listing (`listings/block-1.rs`), wrapped as a function\n\
+        "/// Section 8's listing (`listings/block-1.rs`), wrapped as a function\n\
          /// body by `build.rs`, which reads the listing file unmodified at\n\
          /// build time; nothing between the signature and the final `Ok`\n\
          /// below was retyped by hand. See `PROVENANCE.md` for the listing's\n\

@@ -3,12 +3,17 @@
 Extracted with `scripts/extract_listing.py` (repo root), which copies the
 lines between a fenced ```rust block's opening and closing fence verbatim,
 with no reformatting. Source: `content/blog/ai-agent-audit-trail.mdx` in
-the zatona.dev site repository, at the revision the post was published.
-The post has one fenced ```rust block.
+the zatona.dev site repository. The post has one fenced ```rust block, in
+its Section 8 ("One assembly: a receipt per agent step"). The line range
+below is where that block sits as of the post's current text; the post has
+been revised since this crate was first built (prose around the listing
+changed, e.g. from describing a draft to ATL's published 2.0.0
+specification) and the line range moved with it, but the listing's own
+bytes — and therefore the checksum — have not changed.
 
 | File | Post source lines | SHA-256 of extracted bytes |
 | --- | --- | --- |
-| `listings/block-1.rs` | 152–187 | `f221d5b0b51ade34f9276c19b6bf7f97104043dcae0c970b193343be8fda9dac` |
+| `listings/block-1.rs` | 173–208 | `f221d5b0b51ade34f9276c19b6bf7f97104043dcae0c970b193343be8fda9dac` |
 
 `listings/block-1.rs` is a sequence of `use` items and `let` statements,
 not a complete function — Rust's `include!` macro cannot splice that

@@ -2,7 +2,7 @@
 
 Code for [zatona.dev/blog/ai-agent-audit-trail](https://zatona.dev/blog/ai-agent-audit-trail).
 
-One listing (`listings/block-1.rs`, Section 7), wrapped as a function by
+One listing (`listings/block-1.rs`, Section 8), wrapped as a function by
 `build.rs` because Rust's `include!` cannot splice a bare sequence of
 `use`/`let` statements into a function body directly (see `PROVENANCE.md`
 and `build.rs`'s own doc comment for the exact rustc error and the fix).
@@ -11,7 +11,8 @@ Checksum and extraction method in `PROVENANCE.md`.
 ## What is tested
 
 `tests/live_freetsa_anchor.rs` runs `one_step` against a real, fully valid
-ATL v2.0 receipt (`fixtures/receipt.json`, generated — not hand-written —
+receipt under ATL's published 2.0.0 specification (`fixtures/receipt.json`,
+generated — not hand-written —
 by `atl-core`'s own `ReceiptBuilder`) anchored to a real RFC 3161 token
 fetched once from FreeTSA, specifically for this crate, over the receipt's
 actual Data Tree root (full provenance, including a real integration bug
@@ -35,8 +36,9 @@ anchor does *not* verify without it.
 
 ## What is not tested
 
-The post says the 2.1 witnessed-head receipt members are not yet
-implemented in `atl-core`; this crate does not exercise them either.
+The post describes the receipt as defined by ATL's published 2.0.0
+specification (`atl-core` 6e652ed declares `PROTOCOL_VERSION = "2.0.0"`);
+there is no published 2.1 and nothing version-gated is left untested here.
 `atl-core`'s anchor verification does not fetch a CRL or OCSP response for
 the TSA certificate, and neither does this crate — there is no
 `status_at`-equivalent call in this listing to stub.

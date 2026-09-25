@@ -1,6 +1,7 @@
-//! Runs [`ai_agent_audit_trail::one_step`] — Section 7's listing, wrapped
-//! by `build.rs` — against a real ATL v2.0 receipt anchored to a real
-//! RFC 3161 token from FreeTSA. Fixture provenance is in `fixtures/README.md`.
+//! Runs [`ai_agent_audit_trail::one_step`] — Section 8's listing, wrapped
+//! by `build.rs` — against a real receipt, under ATL's published 2.0.0
+//! specification, anchored to a real RFC 3161 token from FreeTSA. Fixture
+//! provenance is in `fixtures/README.md`.
 //!
 //! The token here is a **separate** live fetch from the one in the
 //! `rfc-3161-vs-opentimestamps` crate in this repository: that crate's
@@ -99,7 +100,7 @@ fn one_step_accepts_a_receipt_anchored_to_a_real_freetsa_token() {
 /// The same receipt without the trust store: the anchor cannot be
 /// resolved to `Trusted`, and the same real token comes back unverified —
 /// the ATL trust model's own point, stated in `atl-core`'s docs and
-/// repeated in the post's Section 7: "trust comes from anchors," and an
+/// repeated in the post's Section 8: "trust comes from anchors," and an
 /// anchor with nothing to terminate its chain at contributes nothing.
 #[test]
 fn one_step_without_a_root_cannot_verify_the_same_anchor() {
