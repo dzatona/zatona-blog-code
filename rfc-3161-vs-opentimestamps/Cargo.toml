@@ -1,0 +1,25 @@
+[package]
+name = "rfc-3161-vs-opentimestamps"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.85"
+license = "Apache-2.0"
+description = "Rust listings from the zatona.dev post \"RFC 3161 vs OpenTimestamps\", reconstructing tsp-check and compiled/tested against a live TSA token and the OpenTimestamps client's own example proofs"
+publish = false
+
+[dependencies]
+sha2 = "0.10"
+der = "0.7"
+const-oid = { version = "0.9", features = ["db"] }
+x509-tsp = "0.1.0"
+x509-cert = "0.2"
+cms = "0.2.3"
+cmpv2 = "0.2"
+spki = "0.7"
+p384 = { version = "0.13", features = ["ecdsa"] }
+ecdsa = "0.16"
+signature = "2"
+opentimestamps = "0.2.0"
+
+[dev-dependencies]
+hex = "0.4"

@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        crate:
+          - rfc-3161-vs-opentimestamps
+          - intel-tdx-remote-attestation-verifier
+          - tamper-evident-audit-logs
+          - ai-agent-audit-trail
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@1.95.0
+        with:
+          components: rustfmt, clippy
+
+      - name: Cache cargo registry and build
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            ${{ matrix.crate }}/target
+          key: ${{ runner.os }}-cargo-${{ matrix.crate }}-${{ hashFiles(format('{0}/Cargo.lock', matrix.crate)) }}
+
+      - name: Format check
+        run: cargo fmt --manifest-path ${{ matrix.crate }}/Cargo.toml --check
+
+      - name: Test (locked, using the committed Cargo.lock)
+        run: cargo test --manifest-path ${{ matrix.crate }}/Cargo.toml --locked
+
+      - name: Clippy
+        run: cargo clippy --manifest-path ${{ matrix.crate }}/Cargo.toml --all-targets --locked

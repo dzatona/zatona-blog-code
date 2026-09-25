@@ -1,0 +1,19 @@
+[package]
+name = "ai-agent-audit-trail"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.85"
+license = "Apache-2.0"
+description = "Rust listing from the zatona.dev post \"AI Agent Audit Trail\", compiled and tested"
+publish = false
+
+[dependencies]
+sha2 = "0.10"
+serde_json = "1"
+x509-cert = "0.2"
+atl-core = { git = "https://github.com/evidentum-io/atl-core", rev = "6e652edf8029d2856321801e362b5f6a4dd0930c" }
+
+[dev-dependencies]
+der = "0.7"
+ed25519-dalek = { version = "2", features = ["rand_core"] }
+uuid = "1"

@@ -1,0 +1,11 @@
+{
+  "height": 358391,
+  "merkle_root_internal_byte_order_hex": "007ee445d23ad061af4a36b809501fab1ac4f2d7e7a739817dd0cbb7ec661b8a",
+  "merkle_root_display_order_hex": "8a1b66ecb7cbd07d8139a7e7d7f2c41aab1f5009b8364aaf61d03ad245e47e00",
+  "block_hash": "000000000000000003e892881a8cdcdc117c06d444057c98b6f04a9ee75a2319",
+  "time_unix": 1432827678,
+  "time_utc": "2015-05-28T15:41:18Z",
+  "source": "https://blockstream.info/api/block-height/358391 and https://blockstream.info/api/block/000000000000000003e892881a8cdcdc117c06d444057c98b6f04a9ee75a2319",
+  "fetched": "2026-09-25",
+  "note": "Cross-checked against the post's own stated values (both byte orders and the header time), not taken from the post or from the OpenTimestamps calendar/client."
+}

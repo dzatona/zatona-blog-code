@@ -1,0 +1,12 @@
+[package]
+name = "tamper-evident-audit-logs"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.85"
+license = "Apache-2.0"
+description = "Rust listings from the zatona.dev post \"Tamper-Evident Audit Logs\", compiled and tested"
+publish = false
+
+[dependencies]
+sha2 = "0.10"
+atl-core = { git = "https://github.com/evidentum-io/atl-core", rev = "6e652edf8029d2856321801e362b5f6a4dd0930c" }

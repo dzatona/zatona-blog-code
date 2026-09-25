@@ -1,0 +1,12 @@
+[package]
+name = "intel-tdx-remote-attestation-verifier"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.85"
+license = "Apache-2.0"
+description = "Rust listing from the zatona.dev post \"Intel TDX Remote Attestation Verifier Without Intel Trust Authority\", compiled against dcap-qvl 0.6.3"
+publish = false
+
+[dependencies]
+dcap-qvl = "=0.6.3"
+sha2 = "0.10"
