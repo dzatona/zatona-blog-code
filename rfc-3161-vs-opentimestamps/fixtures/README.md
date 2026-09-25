@@ -26,7 +26,9 @@ curl -sS -o response.tsr \
   https://freetsa.org/tsr
 
 # FreeTSA's own certificates, fetched separately (not taken from inside
-# the response) and used as this test's pinned trust material.
+# the response). freetsa-tsa.der is this test's pinned trust material for
+# open_token; freetsa-cacert.der is the independently-fetched root
+# verify_issued_by checks freetsa-tsa.der against before it is pinned.
 curl -sS -o freetsa-tsa.crt   https://freetsa.org/files/tsa.crt
 curl -sS -o freetsa-cacert.pem https://freetsa.org/files/cacert.pem
 openssl x509 -in freetsa-tsa.crt    -outform DER -out freetsa-tsa.der
@@ -58,15 +60,27 @@ $ openssl x509 -in freetsa-tsa.crt -noout -text | grep -A2 "Signature Algorithm\
             X509v3 Extended Key Usage: critical
                 Time Stamping
 
+$ openssl x509 -in freetsa-cacert.pem -noout -text | grep -A2 "Signature Algorithm\|Public-Key"
+        Signature Algorithm: sha512WithRSAEncryption
+            Public Key Algorithm: rsaEncryption
+                Public-Key: (4096 bit)
+
 $ openssl asn1parse -in response.tsr -inform DER | tail -8
  4518:d=7  hl=2 l=   8 prim: OBJECT            :ecdsa-with-SHA512
  4528:d=6  hl=2 l= 103 prim: OCTET STRING      [HEX DUMP]:3065...
 ```
 
-So: FreeTSA's TSA certificate signs with ECDSA over P-384 (`secp384r1`),
-and this response's `signerInfo.signatureAlgorithm` is `ecdsa-with-SHA512`
-— which is what `tests/live_freetsa_token.rs`'s `verify_ecdsa_p384_sha512`
-implements, and the one algorithm pair it claims to handle.
+So: FreeTSA's TSA certificate signs *tokens* with ECDSA over P-384
+(`secp384r1`), and this response's `signerInfo.signatureAlgorithm` is
+`ecdsa-with-SHA512` — which is what `tests/live_freetsa_token.rs`'s
+`verify_ecdsa_p384_sha512` implements, and the one algorithm pair it
+claims to handle. Separately, FreeTSA's **root** signs *certificates*
+(including the TSA certificate itself) with RSA-4096,
+`sha512WithRSAEncryption` — which is what `src/tsp.rs`'s
+`verify_issued_by` implements, and the one algorithm it claims to handle
+for chain links. The two are different keys, different algorithms, and
+different things being signed (a token vs. a certificate); nothing in
+this crate assumes they are the same check.
 
 `request.tsq` is 68 bytes of content in a 70-byte file (`SEQUENCE` header
 included); `response.tsr` is 4645 bytes. Policy OID `1.2.3.4.1` and the

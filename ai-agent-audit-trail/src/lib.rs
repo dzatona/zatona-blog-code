@@ -14,12 +14,17 @@
 //!
 //! What is tested: `tests/live_freetsa_anchor.rs` runs [`one_step`] against
 //! a real receipt anchored to a real RFC 3161 token fetched once from
-//! FreeTSA (fixture and provenance in `fixtures/`, shared with the
-//! `rfc-3161-vs-opentimestamps` crate in this repository, which fetched
-//! it). The receipt's Merkle root is exactly the digest FreeTSA's token
-//! covers, by construction, so the write side's `payload_hash` /
-//! `metadata_hash` / `compute_leaf_hash` path and the read side's anchor
-//! verification both run against the real library, not against stubs.
+//! FreeTSA specifically for this crate (fixture and provenance in
+//! `fixtures/`) — a second, separate fetch from the one in the
+//! `rfc-3161-vs-opentimestamps` crate in this repository, over a different
+//! digest, because this receipt's anchor has to cover *this* receipt's
+//! own Data Tree root, not an unrelated value. The test calls `one_step`
+//! with the same `step_bytes` the fixture's `payload_hash` was built from,
+//! and the listing's own `json!` metadata literal is reproduced
+//! byte-for-byte when building the fixture, so the write side's computed
+//! `leaf` and the read side's receipt are not merely two paths that both
+//! happen to run — the test asserts the write side's `leaf` equals the
+//! read side's anchored root.
 //!
 //! What is not tested: the post says the 2.1 witnessed-head receipt
 //! members are not yet implemented in `atl-core`; this crate does not

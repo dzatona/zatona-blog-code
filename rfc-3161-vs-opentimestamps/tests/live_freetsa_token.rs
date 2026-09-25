@@ -12,11 +12,23 @@
 //! `CertStatus::Good`; see `src/tsp.rs`'s module docs for why (no crate in
 //! this stack fetches a CRL or OCSP response, matching the post's own
 //! statement about Check 5).
+//!
+//! `open_token` itself has no certificate-chain step (Check 3 trusts
+//! `pinned_certs` directly; see `verify_issued_by`'s own doc comment in
+//! `src/tsp.rs`). What this file adds on top, with real RSA-4096/SHA-512
+//! cryptography and not a stub, is checking the certificate *before*
+//! pinning it: that FreeTSA's real TSA certificate really is signed by
+//! FreeTSA's real, separately-fetched root
+//! (`freetsa_tsa_certificate_chains_to_freetsas_own_root`, and inline in
+//! `open_token_accepts_the_live_freetsa_response` before that test pins
+//! anything).
 
 use cms::signed_data::SignedData;
 use der::{Decode, Encode};
 use p384::ecdsa::{DerSignature, VerifyingKey};
-use rfc_3161_vs_opentimestamps::tsp::{build_request, open_token, CertStatus, Reject};
+use rfc_3161_vs_opentimestamps::tsp::{
+    build_request, open_token, verify_issued_by, CertStatus, Reject,
+};
 use sha2::{Digest, Sha512};
 use signature::hazmat::PrehashVerifier;
 use x509_cert::Certificate;
@@ -118,6 +130,41 @@ fn pinned_tsa_cert() -> Certificate {
     Certificate::from_der(&der).expect("a valid DER certificate")
 }
 
+fn freetsa_root_cert() -> Certificate {
+    let der = load("freetsa-cacert.der");
+    Certificate::from_der(&der).expect("a valid DER certificate")
+}
+
+/// `open_token` never validates a chain (see `verify_issued_by`'s own doc
+/// comment in `src/tsp.rs`): Check 3 trusts whatever is in `pinned_certs`
+/// directly. This is the check that makes pinning `freetsa-tsa.der` a
+/// defensible choice rather than blind trust-on-first-use: a real
+/// signature, verified with real RSA-4096/SHA-512 cryptography, from
+/// FreeTSA's own separately-fetched root over FreeTSA's own TSA
+/// certificate.
+#[test]
+fn freetsa_tsa_certificate_chains_to_freetsas_own_root() {
+    let leaf = pinned_tsa_cert();
+    let root = freetsa_root_cert();
+    assert!(
+        verify_issued_by(&leaf, &root),
+        "FreeTSA's real TSA certificate must verify against FreeTSA's real root"
+    );
+}
+
+/// The negative case for the same real cryptography: a certificate the
+/// root never signed (this crate's own synthetic fixture, generated
+/// locally and signed by nobody FreeTSA knows) must not verify against
+/// FreeTSA's root, ruling out a `verify_issued_by` that silently returns
+/// `true`.
+#[test]
+fn an_unrelated_certificate_does_not_chain_to_freetsas_root() {
+    let unrelated_der = load("synthetic-no-eku.der");
+    let unrelated = Certificate::from_der(&unrelated_der).expect("a valid DER certificate");
+    let root = freetsa_root_cert();
+    assert!(!verify_issued_by(&unrelated, &root));
+}
+
 #[test]
 fn build_request_reproduces_the_exact_bytes_sent_to_freetsa() {
     let message = load("message.txt");
@@ -139,6 +186,14 @@ fn open_token_accepts_the_live_freetsa_response() {
 
     let response = load("response.tsr");
     let cert = pinned_tsa_cert();
+    // Chain the certificate this test is about to pin to FreeTSA's own
+    // root before pinning it -- see `freetsa_tsa_certificate_chains_to_freetsas_own_root`
+    // for this same check as its own test, and `verify_issued_by`'s doc
+    // comment in `src/tsp.rs` for exactly what it does and does not check.
+    assert!(
+        verify_issued_by(&cert, &freetsa_root_cert()),
+        "refusing to pin a certificate this crate cannot chain to FreeTSA's root"
+    );
     // 1.2.3.4.1: FreeTSA's demo policy OID, read off this exact response
     // with `openssl asn1parse` (see fixtures/README.md).
     let policy = der::asn1::ObjectIdentifier::new_unwrap("1.2.3.4.1");

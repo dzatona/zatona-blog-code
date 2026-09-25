@@ -13,16 +13,25 @@ Checksum and extraction method in `PROVENANCE.md`.
 `tests/live_freetsa_anchor.rs` runs `one_step` against a real, fully valid
 ATL v2.0 receipt (`fixtures/receipt.json`, generated — not hand-written —
 by `atl-core`'s own `ReceiptBuilder`) anchored to a real RFC 3161 token
-fetched once from FreeTSA over the receipt's actual Data Tree root, not a
-substitute value (full provenance, including a real integration bug this
-found in `atl-core`'s own doc comment for `token_der`, in
-`fixtures/README.md`). Both the write side (`payload_hash`/`metadata_hash`
-via `canonicalize_and_hash`/`compute_leaf_hash`) and the read side
-(`Receipt::from_json`, `TrustStore`, `ReceiptVerifier::anchor_only_with_options`)
-of the listing run against `atl-core`'s real implementation, and the
-receipt is accepted (`result.is_valid`), not merely "anchor resolves." A
-second test with an unrelated certificate as the trust root confirms the
-same anchor does *not* verify without it.
+fetched once from FreeTSA, specifically for this crate, over the receipt's
+actual Data Tree root (full provenance, including a real integration bug
+this found in `atl-core`'s own doc comment for `token_der`, in
+`fixtures/README.md`; this token is a *separate* fetch from the one in the
+`rfc-3161-vs-opentimestamps` crate, which times-tamps a different, unrelated
+digest).
+
+The write side is not merely executed — it is checked against the read
+side. `build.rs` returns the listing's own computed `leaf` (the write
+side's `payload_hash`/`metadata_hash`/`compute_leaf_hash` output,
+unaltered) alongside the verification result, and the test calls
+`one_step` with the exact `step_bytes` the fixture's `payload_hash` was
+built from, with a `metadata` field the fixture reproduces byte-for-byte
+from the listing's own `json!` literal. The test then asserts the write
+side's `leaf` equals the read side's anchored root, decoded independently
+from the receipt JSON (not through `atl-core`). The receipt is accepted
+end to end (`result.is_valid`), not merely "anchor resolves." A second
+test with an unrelated certificate as the trust root confirms the same
+anchor does *not* verify without it.
 
 ## What is not tested
 

@@ -27,9 +27,15 @@ fn main() {
     let wrapped = format!(
         "/// Section 7's listing (`listings/block-1.rs`), wrapped as a function\n\
          /// body by `build.rs`, which reads the listing file unmodified at\n\
-         /// build time; nothing between the signature and `Ok(result)` below\n\
-         /// was retyped by hand. See `PROVENANCE.md` for the listing's\n\
+         /// build time; nothing between the signature and the final `Ok`\n\
+         /// below was retyped by hand. See `PROVENANCE.md` for the listing's\n\
          /// checksum and extraction method.\n\
+         ///\n\
+         /// Returns the listing's own computed `leaf` (the write side's\n\
+         /// value, unaltered) alongside the read side's verification\n\
+         /// result, so a caller can assert the two sides actually agree —\n\
+         /// the listing itself never connects them; nothing here changes\n\
+         /// what either side computes.\n\
          ///\n\
          /// # Errors\n\
          ///\n\
@@ -37,15 +43,13 @@ fn main() {
          /// receipt, or (propagated through the `?` in the listing) a JCS\n\
          /// canonicalization failure in the metadata object.\n\
          #[allow(clippy::missing_panics_doc)]\n\
-         #[allow(unused_variables)] // `leaf` is computed and, per the post's own\n\
-         // comment, handed to the log server; nothing in this listing consumes it\n\
          pub fn one_step(\n    \
              step_bytes: &[u8],\n    \
              receipt_json: String,\n    \
              tsa_root_certificate: x509_cert::Certificate,\n\
-         ) -> Result<atl_core::VerificationResult, Box<dyn std::error::Error>> {{\n\
+         ) -> Result<(atl_core::Hash, atl_core::VerificationResult), Box<dyn std::error::Error>> {{\n\
          {listing}\n    \
-             Ok(result)\n\
+             Ok((leaf, result))\n\
          }}\n"
     );
 

@@ -10,23 +10,42 @@
 //! `PROVENANCE.md`. Everything else in this file — the `use` items this
 //! module needs beyond what `block-1.rs` already imports, the `Reject`,
 //! `Accepted`, `Bound` and `CertStatus` types `open_token` (`block-2.rs`)
-//! returns and matches on, and `signed_data_of`/`unix_millis`/
-//! `signer_certificate` — is glue the post's prose describes without
-//! printing a listing for. `signer_certificate` in particular: the post's
-//! Section 3 says identification "comes from the certificate identifier in
-//! the signerInfo," which is CMS's `SignerIdentifier` (RFC 5652 Section
-//! 5.3) — `IssuerAndSerialNumber` or `SubjectKeyIdentifier` — matched
-//! against the caller's `pinned_certs`.
+//! returns and matches on, `signed_data_of`/`unix_millis`/
+//! `signer_certificate`, and [`verify_issued_by`] — is glue the post's
+//! prose describes without printing a listing for. `signer_certificate` in
+//! particular: the post's Section 3 says identification "comes from the
+//! certificate identifier in the signerInfo," which is CMS's
+//! `SignerIdentifier` (RFC 5652 Section 5.3) — `IssuerAndSerialNumber` or
+//! `SubjectKeyIdentifier` — matched against the caller's `pinned_certs`.
+//!
+//! **On "the chain."** The post's own summary of what the ecosystem's
+//! crates leave to the caller — "the signature check, the chain, the
+//! extended key usage and the revocation decision are yours" — names four
+//! things, and `open_token` (`block-2.rs`) itself implements exactly three
+//! of them as its own steps: the signature check (Check 3, delegated to a
+//! caller closure this crate implements for real), the extended key usage
+//! (`check_eku`), and the revocation decision (`status_at`, a caller
+//! closure — see "What is not tested" below). `open_token`'s Check 3
+//! identifies and trusts a certificate from `pinned_certs` directly; it
+//! has no path-building step to a separate root, so "the chain" is not
+//! something the listing itself does. [`verify_issued_by`] is this
+//! module's own addition, checked with real RSA-4096/SHA-512
+//! cryptography against FreeTSA's real root in
+//! `tests/live_freetsa_token.rs`, before that test pins FreeTSA's TSA
+//! certificate — but it is one signature link, not RFC 5280 path
+//! building; see its own doc comment for exactly what it does not do.
 //!
 //! ## What is tested
 //!
 //! `tests/live_freetsa_token.rs` runs [`build_request`] and [`open_token`]
 //! against a real response from FreeTSA's public server (fixture and
 //! provenance in `fixtures/`), including a real ECDSA P-384/SHA-512
-//! signature verification (`tests/verify_signature.rs`'s
-//! `verify_ecdsa_signed_attrs`, built from the CMS types this module
-//! parses with, not from a canned "always true" closure) and
+//! signature verification (not a canned "always true" closure) and
 //! [`check_eku`] against the real TSA certificate's extended key usage.
+//! Separately, [`verify_issued_by`] checks — with real RSA-4096/SHA-512
+//! verification, not a stub — that FreeTSA's real TSA certificate is
+//! signed by FreeTSA's real, separately-fetched root, both as its own
+//! test and inline before the accepting test pins that certificate.
 //!
 //! ## What is not tested
 //!
@@ -37,19 +56,25 @@
 //! Nothing about `open_token`'s revocation-status *handling* (the
 //! `match status_at(...)` arms) is left untested by that, since the other
 //! three arms are exercised directly against the enum, not through the
-//! network.
+//! network. [`verify_issued_by`] is one signature link, not multi-hop path
+//! building, `basicConstraints`/`keyUsage`/name-constraint checking, or
+//! validity-period checking — FreeTSA's certificate hierarchy is exactly
+//! two certificates deep, so one link is what a chain check needs here,
+//! but a general path-building verifier this is not.
 
 use cmpv2::status::PkiStatus;
 use cms::signed_data::{SignedData, SignerIdentifier};
 use const_oid::db::rfc5280::ID_KP_TIME_STAMPING;
+use const_oid::db::rfc5912::ID_SHA_256;
 use const_oid::db::rfc5912::{ID_SHA_224, ID_SHA_384, ID_SHA_512};
 use const_oid::AssociatedOid;
 use der::asn1::ObjectIdentifier;
-use der::{Decode, Tag, Tagged};
+use der::{Any, Decode, Tag, Tagged};
 use x509_cert::ext::pkix::name::GeneralName;
 use x509_cert::ext::pkix::{ExtendedKeyUsage, SubjectAltName};
+use x509_cert::spki::AlgorithmIdentifier;
 use x509_cert::Certificate;
-use x509_tsp::{TimeStampResp, TimeStampToken, TstInfo};
+use x509_tsp::{MessageImprint, TimeStampResp, TimeStampToken, TspVersion, TstInfo};
 
 /// `id-ct-TSTInfo`, RFC 3161 Section 2.4.2 / RFC 5652: `1.2.840.113549.1.9.16.1.4`.
 /// Not in `const-oid`'s 0.9 database (no `rfc3161` module there), so it is
@@ -213,7 +238,82 @@ fn signer_certificate(
     }
 }
 
-include!("../listings/block-1.rs");
+/// One link of X.509 path validation: does `issuer`'s public key verify
+/// `child`'s signature over `child`'s own `TBSCertificate`?
+///
+/// This is *not* full RFC 5280 path building. There is no search for an
+/// issuer among a candidate set, no `basicConstraints`/`keyUsage`/
+/// `pathLenConstraint`/name-constraint checking, no validity-period check,
+/// and no support for more than the one signature algorithm this crate's
+/// real fixture actually uses (`sha512WithRSAEncryption`, RSA PKCS#1 v1.5
+/// — FreeTSA's own root and TSA certificate both use it; see
+/// `fixtures/README.md`). What it does check is real: it recomputes the
+/// child's `TBSCertificate` DER, verifies the RSA signature over it with
+/// the issuer's own public key, and returns `false` on any mismatch or on
+/// an algorithm this function does not implement — it never returns `true`
+/// without having checked a signature.
+///
+/// `open_token` (`block-2.rs`) has no chain-validation step of its own:
+/// its Check 3 identifies and trusts a certificate from `pinned_certs`
+/// directly (RFC 3161 Section 2.2's "verify that the token carries the
+/// correct certificate identifier of the TSA"), which is direct
+/// certificate pinning, not a path walk to a separate root. This function
+/// exists so that the certificate a caller chooses to pin can itself be
+/// checked against an independently held root, rather than trusted on
+/// sight — see `tests/live_freetsa_token.rs` for where that check runs
+/// before FreeTSA's TSA certificate is pinned.
+pub fn verify_issued_by(child: &Certificate, issuer: &Certificate) -> bool {
+    use der::Encode;
+    use rsa::pkcs1v15::Pkcs1v15Sign;
+    use rsa::RsaPublicKey;
+    use sha2::{Digest, Sha512};
+
+    const SHA512_WITH_RSA_ENCRYPTION: &str = "1.2.840.113549.1.1.13";
+    if child.signature_algorithm.oid.to_string() != SHA512_WITH_RSA_ENCRYPTION {
+        return false;
+    }
+
+    let Ok(spki_der) = issuer.tbs_certificate.subject_public_key_info.to_der() else {
+        return false;
+    };
+    let Ok(spki_ref) = spki::SubjectPublicKeyInfoRef::from_der(&spki_der) else {
+        return false;
+    };
+    let Ok(public_key) = RsaPublicKey::try_from(spki_ref) else {
+        return false;
+    };
+
+    let Ok(tbs_der) = child.tbs_certificate.to_der() else {
+        return false;
+    };
+    let Some(signature_bytes) = child.signature.as_bytes() else {
+        return false;
+    };
+    let digest = Sha512::digest(&tbs_der);
+
+    public_key
+        .verify(Pkcs1v15Sign::new::<Sha512>(), &digest, signature_bytes)
+        .is_ok()
+}
+
+// `#[allow(...)]` on an `include!` invocation itself is ignored by rustc
+// ("the built-in attribute `allow` will be ignored, since it's applied to
+// the macro invocation `include`"); wrapping the one listing that produces
+// a warning in its own module, with the attribute on the *module*, scopes
+// the allow to exactly that listing's own generated items and nothing
+// else in this file -- CI's `-D warnings` still fails on any new warning
+// anywhere else. `pub use block_1::*;` re-exports `PendingRequest`,
+// `nonce_integer` and `build_request` into this module's own namespace, so
+// `block-2.rs`, `block-3.rs`, `block-4.rs` and `block-6.rs` below (which
+// use `PendingRequest` and are not wrapped, because they warn about
+// nothing) see them exactly as if `block-1.rs` were included flat here, as
+// in every other crate in this repository.
+#[allow(deprecated)] // block-1.rs:43, digest.as_slice() -- see PROVENANCE.md
+mod block_1 {
+    include!("../listings/block-1.rs");
+}
+pub use block_1::*;
+
 include!("../listings/block-3.rs");
 include!("../listings/block-4.rs");
 include!("../listings/block-6.rs");

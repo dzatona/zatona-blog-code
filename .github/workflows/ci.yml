@@ -37,6 +37,16 @@ jobs:
 
       - name: Test (locked, using the committed Cargo.lock)
         run: cargo test --manifest-path ${{ matrix.crate }}/Cargo.toml --locked
+        env:
+          # Denies compiler warnings, not just clippy's. The two warnings
+          # that appear inside unmodified post listings (a deprecated-API
+          # warning in rfc-3161-vs-opentimestamps/listings/block-1.rs, a
+          # clippy lint in listings/block-5.rs) are silenced at the source
+          # by a `#[allow(...)]` on the private module each listing is
+          # wrapped in (see src/tsp.rs and src/ots.rs there), not by a
+          # crate- or CI-wide allow, so a new warning anywhere else still
+          # fails this job.
+          RUSTFLAGS: -D warnings
 
-      - name: Clippy
-        run: cargo clippy --manifest-path ${{ matrix.crate }}/Cargo.toml --all-targets --locked
+      - name: Clippy (denies warnings; see the RUSTFLAGS comment above)
+        run: cargo clippy --manifest-path ${{ matrix.crate }}/Cargo.toml --all-targets --locked -- -D warnings

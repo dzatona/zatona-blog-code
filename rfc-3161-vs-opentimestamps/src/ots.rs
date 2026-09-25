@@ -67,4 +67,23 @@ pub struct Reached {
     pub unknown: Vec<Vec<u8>>,
 }
 
-include!("../listings/block-5.rs");
+// `#[allow(...)]` on an `include!` invocation itself is ignored by rustc
+// ("the built-in attribute `allow` will be ignored, since it's applied to
+// the macro invocation `include`"); wrapping the listing in its own
+// module, with the attribute on the *module*, scopes the allow to exactly
+// this listing's own generated code and nothing else in this crate --
+// CI's `-D warnings` still fails on any new warning anywhere else.
+// `use super::*;` brings in the names this module defines above
+// (`Reached`, `BitcoinCommitment`) and imports (`Attestation`, `Step`,
+// `StepData`, `DetachedTimestampFile`, `DigestType`, `Sha256`, `Digest`),
+// none of which a child module inherits automatically; `pub use block_5::*;`
+// re-exports everything block-5.rs itself declares `pub` (`HeaderSource`,
+// `AttestationOutcome`, `Verdict`, `Outcome`, `OtsError`, `walk`, `verify`)
+// back out at `crate::ots`, so external callers see the exact same paths
+// they would if this listing were included flat here.
+#[allow(clippy::unnecessary_map_or)] // block-5.rs:146, best.map_or(true, ...) -- see PROVENANCE.md
+mod block_5 {
+    use super::*;
+    include!("../listings/block-5.rs");
+}
+pub use block_5::*;

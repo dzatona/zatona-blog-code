@@ -4,13 +4,29 @@ Code for [zatona.dev/blog/rfc-3161-vs-opentimestamps](https://zatona.dev/blog/rf
 
 The post's own framing: `x509-tsp` and `cms` parse RFC 3161's ASN.1 and
 verify nothing; "the signature check, the chain, the extended key usage
-and the revocation decision are yours." This crate reconstructs that —
-the six fenced ```rust blocks the post prints (`listings/`, checksums and
-line ranges in `PROVENANCE.md`), plus the glue the post describes in prose
+and the revocation decision are yours." This crate reconstructs the six
+fenced ```rust blocks the post prints (`listings/`, checksums and line
+ranges in `PROVENANCE.md`), plus the glue the post describes in prose
 without printing a listing for (`Reject`, `Accepted`, `Bound`,
-`CertStatus`, and `signer_certificate` for the RFC 3161 half in
-[`src/tsp.rs`](src/tsp.rs); `Reached` and `BitcoinCommitment` for the
-OpenTimestamps half in [`src/ots.rs`](src/ots.rs)).
+`CertStatus`, `signer_certificate` and `verify_issued_by` for the RFC 3161
+half in [`src/tsp.rs`](src/tsp.rs); `Reached` and `BitcoinCommitment` for
+the OpenTimestamps half in [`src/ots.rs`](src/ots.rs)).
+
+Of the post's four things — signature check, chain, EKU, revocation
+decision — `open_token` (Section 3's `block-2.rs`) itself implements three
+as its own checks (signature, via a caller closure this crate implements
+for real; EKU, via `check_eku`; revocation, via a caller closure, stubbed
+here — see below). It has **no chain-building step**: Check 3 trusts
+whatever certificate is in `pinned_certs` directly, which is certificate
+pinning, not a path walk to a root. `verify_issued_by` (`src/tsp.rs`) is
+this crate's own addition on top, not part of the listing: real
+RSA-4096/SHA-512 verification that FreeTSA's real TSA certificate is
+signed by FreeTSA's real, separately-fetched root — one signature link,
+run before that certificate is pinned, not general path building (see
+`verify_issued_by`'s own doc comment for the exact scope). The post's
+sentence itself is accurate; it names what the *ecosystem's* crates leave
+undone, not a claim about what this specific listing's `open_token`
+function does internally, and it does not overclaim.
 
 ## What is tested
 
@@ -24,6 +40,10 @@ OpenTimestamps half in [`src/ots.rs`](src/ots.rs)).
     signature verification over the CMS signed attributes (not a stub that
     always returns `true`) and a real check of `check_eku` against
     FreeTSA's real certificate.
+  - Before that, `verify_issued_by` checks — with real RSA-4096/SHA-512
+    verification, not a stub — that the certificate being pinned really is
+    signed by FreeTSA's real, separately-fetched root; also its own test,
+    plus a negative case against an unrelated certificate.
   - A tampered signature byte is rejected; a forged rejection status short
     circuits before the signature closure ever runs.
   - `check_eku`'s three rejecting paths (no EKU extension, a non-critical
@@ -60,6 +80,14 @@ OpenTimestamps half in [`src/ots.rs`](src/ots.rs)).
   carries. The post's own text on RFC 5816 is about a *different*,
   narrower gap — `ESSCertID`/`ESSCertIDv2` inside the `tsa` field's
   binding — and is not itself a listing this crate reconstructs.
+- **General X.509 path building.** `verify_issued_by` is one signature
+  link (child signed by a specific, named issuer), not a search over a
+  candidate certificate set, not multi-hop path building, and it checks
+  no `basicConstraints`, `keyUsage`, name constraint or validity period —
+  see its own doc comment in `src/tsp.rs`. `open_token` itself has no
+  chain step at all (see above); only the one link this repository's real
+  fixtures have (FreeTSA's TSA certificate, signed directly by FreeTSA's
+  root) is implemented or tested.
 - **`grantedWithMods` and the other five `PKIStatusInfo` statuses**, and
   RFC 4210's `keyUpdateWarning`. Only `granted` (via the real fixture) and
   a forged `rejection` are exercised.
