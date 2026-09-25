@@ -43,7 +43,11 @@ function does internally, and it does not overclaim.
   - Before that, `verify_issued_by` checks — with real RSA-4096/SHA-512
     verification, not a stub — that the certificate being pinned really is
     signed by FreeTSA's real, separately-fetched root; also its own test,
-    plus a negative case against an unrelated certificate.
+    plus two negative cases that are deliberately different failures: an
+    unsupported-algorithm certificate rejected at the algorithm gate
+    (before any RSA math runs), and FreeTSA's own real certificate with
+    one signature byte flipped — correct algorithm, wrong signature —
+    rejected by the RSA/SHA-512 check itself.
   - A tampered signature byte is rejected; a forged rejection status short
     circuits before the signature closure ever runs.
   - `check_eku`'s three rejecting paths (no EKU extension, a non-critical

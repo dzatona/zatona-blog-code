@@ -152,17 +152,48 @@ fn freetsa_tsa_certificate_chains_to_freetsas_own_root() {
     );
 }
 
-/// The negative case for the same real cryptography: a certificate the
-/// root never signed (this crate's own synthetic fixture, generated
-/// locally and signed by nobody FreeTSA knows) must not verify against
-/// FreeTSA's root, ruling out a `verify_issued_by` that silently returns
-/// `true`.
+/// The algorithm-gate negative case, and *only* that: `synthetic-no-eku.der`
+/// is signed `sha256WithRSAEncryption` (see `fixtures/README.md`'s `openssl
+/// req ... -sha256` command), which `verify_issued_by` refuses outright,
+/// before any RSA verification runs — its doc comment in `src/tsp.rs` says
+/// it "returns `false` on any mismatch or on an algorithm this function
+/// does not implement". This test proves the *algorithm* gate; it does
+/// *not* exercise RSA/SHA-512 signature verification failing on a
+/// correctly-algorithmed certificate — that is
+/// `a_supported_algorithm_certificate_with_a_wrong_signature_does_not_chain`,
+/// below.
 #[test]
-fn an_unrelated_certificate_does_not_chain_to_freetsas_root() {
+fn an_unsupported_algorithm_certificate_is_rejected_at_the_gate() {
     let unrelated_der = load("synthetic-no-eku.der");
     let unrelated = Certificate::from_der(&unrelated_der).expect("a valid DER certificate");
     let root = freetsa_root_cert();
     assert!(!verify_issued_by(&unrelated, &root));
+}
+
+/// The negative case for the RSA/SHA-512 verification itself, not the
+/// algorithm gate: FreeTSA's own real TSA certificate, `sha512WithRSAEncryption`
+/// throughout (so the gate passes), with one byte flipped inside its
+/// `signatureValue` `BIT STRING` (the file's last byte — `openssl asn1parse`
+/// on `freetsa-tsa.der` shows the `BIT STRING` starts at offset 1119 with a
+/// 513-byte encoded length, ending exactly at the file's last byte, so
+/// flipping it cannot land outside the signature or break the DER
+/// structure). The algorithm matches; the signature does not verify; this
+/// is the case that rules out a `verify_issued_by` whose gate is real but
+/// whose RSA check silently passes anything.
+#[test]
+fn a_supported_algorithm_certificate_with_a_wrong_signature_does_not_chain() {
+    let mut tampered_der = load("freetsa-tsa.der");
+    let last = tampered_der.len() - 1;
+    tampered_der[last] ^= 0x01;
+    let tampered = Certificate::from_der(&tampered_der)
+        .expect("flipping one signature byte does not change the DER structure");
+    assert_eq!(
+        tampered.signature_algorithm.oid.to_string(),
+        "1.2.840.113549.1.1.13",
+        "must still be sha512WithRSAEncryption, or this is not testing the RSA check"
+    );
+    let root = freetsa_root_cert();
+    assert!(!verify_issued_by(&tampered, &root));
 }
 
 #[test]
