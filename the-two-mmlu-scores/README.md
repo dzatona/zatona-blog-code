@@ -6,7 +6,8 @@ The post prints JSON frames, claims, a bridge and a relation query, and the
 outputs of the `apl-ai-eval` verifier for them. This directory holds those
 JSON blocks byte for byte (`fixtures/`), runs the verifier at a pinned commit
 on them, and compares each printed output with the real output byte for byte.
-`PROVENANCE.md` records where each block sits in the post and its checksum.
+`PROVENANCE.md` identifies each fixture by its order among the post's JSON
+blocks and by its checksum, and says how to re-extract them.
 
 ## What is run
 
