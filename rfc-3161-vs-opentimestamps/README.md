@@ -3,30 +3,31 @@
 Code for [zatona.dev/blog/rfc-3161-vs-opentimestamps](https://zatona.dev/blog/rfc-3161-vs-opentimestamps).
 
 The post's own framing: `x509-tsp` and `cms` parse RFC 3161's ASN.1 and
-verify nothing; "the signature check, the chain, the extended key usage
-and the revocation decision are yours." This crate reconstructs the six
-fenced ```rust blocks the post prints (`listings/`, checksums and line
-ranges in `PROVENANCE.md`), plus the glue the post describes in prose
-without printing a listing for (`Reject`, `Accepted`, `Bound`,
-`CertStatus`, `signer_certificate` and `verify_issued_by` for the RFC 3161
-half in [`src/tsp.rs`](src/tsp.rs); `Reached` and `BitcoinCommitment` for
-the OpenTimestamps half in [`src/ots.rs`](src/ots.rs)).
+verify nothing, leaving the signature check, the certificate chain, the
+extended key usage and the revocation decision to the caller. This crate
+reconstructs the six fenced ```rust blocks the post prints (`listings/`,
+checksums and line ranges in `PROVENANCE.md`), plus the glue the post
+describes in prose without printing a listing for (`Reject`, `Accepted`,
+`Bound`, `CertStatus`, `signer_certificate` and `verify_issued_by` for the
+RFC 3161 half in [`src/tsp.rs`](src/tsp.rs); `Reached` and
+`BitcoinCommitment` for the OpenTimestamps half in
+[`src/ots.rs`](src/ots.rs)).
 
-Of the post's four things — signature check, chain, EKU, revocation
-decision — `open_token` (Section 3's `block-2.rs`) itself implements three
-as its own checks (signature, via a caller closure this crate implements
-for real; EKU, via `check_eku`; revocation, via a caller closure, stubbed
-here — see below). It has **no chain-building step**: Check 3 trusts
-whatever certificate is in `pinned_certs` directly, which is certificate
-pinning, not a path walk to a root. `verify_issued_by` (`src/tsp.rs`) is
-this crate's own addition on top, not part of the listing: real
-RSA-4096/SHA-512 verification that FreeTSA's real TSA certificate is
-signed by FreeTSA's real, separately-fetched root — one signature link,
-run before that certificate is pinned, not general path building (see
-`verify_issued_by`'s own doc comment for the exact scope). The post's
-sentence itself is accurate; it names what the *ecosystem's* crates leave
-undone, not a claim about what this specific listing's `open_token`
-function does internally, and it does not overclaim.
+Of those four caller responsibilities, `open_token` (Section 3's
+`block-2.rs`) itself implements three as its own checks (signature, via a
+caller closure this crate implements for real; EKU, via `check_eku`;
+revocation, via a caller closure, stubbed here — see below). It has **no
+chain-building step**: Check 3 trusts whatever certificate is in
+`pinned_certs` directly, which is certificate pinning, not a path walk to
+a root. `verify_issued_by` (`src/tsp.rs`) is this crate's own addition on
+top, not part of the listing: real RSA-4096/SHA-512 verification that
+FreeTSA's real TSA certificate is signed by FreeTSA's real,
+separately-fetched root — one signature link, run before that certificate
+is pinned, not general path building (see `verify_issued_by`'s own doc
+comment for the exact scope). The chain is therefore the one caller
+responsibility the listing does not implement, and this crate's own
+`verify_issued_by` addition is what closes that specific gap, not a claim
+that `open_token` does so internally.
 
 ## What is tested
 

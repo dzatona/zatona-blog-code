@@ -8,11 +8,12 @@ in `PROVENANCE.md`.
 
 ## What is tested
 
-The post's own status sentence for this listing is exact: "It compiles; it
-has not been exercised against hardware here." `Manifest` and `verify_td`
-are not `pub` in the listing, so nothing outside `src/lib.rs` can even
-construct a `Manifest`; the crate's tests are therefore unit tests in the
-same module. They call `verify_td` through `dcap-qvl`'s real quote parser
+The post states, for this listing, that it compiles but has not been run
+against real TDX hardware. This crate keeps that same scope: `Manifest`
+and `verify_td` are not `pub` in the listing, so nothing outside
+`src/lib.rs` can even construct a `Manifest`; the crate's tests are
+therefore unit tests in the same module. They call `verify_td` through
+`dcap-qvl`'s real quote parser
 with inputs that are not valid TDX quotes (`&[]` and 64 zero bytes) and
 check it returns `Err` without panicking — the one thing this crate can
 honestly claim to exercise without a TDX-capable machine.

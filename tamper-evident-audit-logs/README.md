@@ -16,9 +16,11 @@ Two listings, both under `listings/` (verbatim, see `PROVENANCE.md`):
 - `hash_chain`: the post's own construction, plus cases the prose describes
   but does not code — an empty chain, a broken genesis pointer, an edit to
   an earlier entry breaking verification against the old head, and that
-  same edit's tail regenerated so it verifies again against a *new* head
-  (the post's stated limit: "whoever holds the chain can regenerate the
-  tail").
+  same edit's tail regenerated so it verifies again against a *new* head —
+  the limit a hash chain has on its own: whoever holds the chain can
+  recompute every hash after an edit and produce a chain that verifies
+  against a head of their own making, so only a head trusted from outside
+  that holder catches the edit.
 - `checkpoint_tree`: `main()` is called from a test and required to return
   `Ok`, which only happens if every `assert!` in the post's own listing —
   inclusion proof verifies, consistency proof verifies, and consistency

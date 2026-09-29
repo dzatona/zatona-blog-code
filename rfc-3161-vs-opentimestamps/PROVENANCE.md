@@ -26,13 +26,16 @@ this crate's first build: 2 ("What is inside an RFC 3161 token"), 3
 `block-1.rs` through `block-4.rs` and `block-6.rs` are `include!`d into
 `src/tsp.rs`; `block-5.rs` is `include!`d into `src/ots.rs`. Neither file
 edits the included bytes; each module's own doc comment says exactly what
-glue surrounds them and why (`signer_certificate`, `verify_issued_by`,
-`Reject`, `Accepted`, `Bound`, `CertStatus`, `Reached`, `BitcoinCommitment`
-are not in any listing — the post describes what some of them do in prose
-without printing a listing for it, most explicitly for
-`signer_certificate`: "Identification comes from the certificate
-identifier in the signerInfo"; `verify_issued_by` is this crate's own
-addition, not described by the post at all — see its own doc comment).
+glue surrounds them and why (`Reject`, `Accepted`, `Bound`, `CertStatus`,
+`Reached`, `BitcoinCommitment` are not in any listing — none of them are
+named or described anywhere in the post, printed or in prose. Two more
+names, `signer_certificate` and `verify_issued_by`, are also not in any
+listing, but the post's own code comment inside `block-2.rs` states the
+principle `signer_certificate` implements — identify the signer from the
+certificate identifier the signerInfo carries, not from a name hint — so
+that one has a basis in the listing's own text even though the function
+itself is glue. `verify_issued_by` is this crate's own addition on top,
+with no counterpart in the post at all — see its own doc comment).
 
 ## Known, unfixed warnings
 
