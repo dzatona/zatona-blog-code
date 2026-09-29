@@ -1,6 +1,6 @@
-import sys, hashlib
+import os, sys, hashlib
 
-def extract(path, out_prefix, ranges):
+def extract(path, out_prefix, ranges, ext='rs'):
     with open(path, 'r', encoding='utf-8') as f:
         lines = f.readlines()
     results = []
@@ -8,7 +8,7 @@ def extract(path, out_prefix, ranges):
         # start = line number of ```rust (1-indexed), end = line number of closing ``` (1-indexed)
         block = lines[start:end-1]  # lines[start] is line start+1 i.e. first content line
         text = ''.join(block)
-        outpath = f"{out_prefix}-{i}.rs"
+        outpath = f"{out_prefix}-{i}.{ext}"
         with open(outpath, 'w', encoding='utf-8') as of:
             of.write(text)
         h = hashlib.sha256(text.encode('utf-8')).hexdigest()
@@ -23,9 +23,12 @@ if __name__ == '__main__':
     for a in args:
         s,e = a.split(':')
         ranges.append((int(s), int(e)))
-    for r in extract(path, out_prefix, ranges):
+    ext = os.environ.get('EXT', 'rs')
+    for r in extract(path, out_prefix, ranges, ext):
         print(r)
 
+# Set EXT=json (or another extension) to name the output files
+# <out-prefix>-N.<EXT> for non-Rust fenced blocks; the default is rs.
 # Usage: python3 extract_listing.py <post.mdx> <out-prefix> <start:end> [<start:end> ...]
 # <start> is the line number of the opening ```rust fence (1-indexed);
 # <end> is the line number of the closing ``` fence. Both from

@@ -1,0 +1,419 @@
+== toolchain
+rustc 1.95.0 (59807616e 2026-04-14)
+cargo 1.95.0 (f2d3ce0bd 2026-03-21)
+== pinned sources
+upstream/apl/apl-core @ e46788cfde6d5da1dc6185265318c5861c876d99
+evidentum.io/atl-core @ 02f459c3b3717610ecc9e18e5d53b62fd1bb1b95
+== upstream: cargo test -p apl-ai-eval (in vendor/upstream/apl/apl-core)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.20s
+     Running unittests src/lib.rs (target/debug/deps/apl_ai_eval-a6057c4e6202b4d1)
+
+running 109 tests
+test bridge::bridge_tests::ac10_runner_equivalence_grader_mismatch ... ok
+test bridge::bridge_tests::ac14_repeatability_wrong_relation_type ... ok
+test bridge::bridge_tests::ac13_grader_equivalence_runner_mismatch ... ok
+test bridge::bridge_tests::ac15_repeatability_accepts_identical_procedures ... ok
+test bridge::bridge_tests::ac2_unknown_bridge_kind ... ok
+test bridge::bridge_tests::ac5_query_left_aspects_differ_from_bridge_source ... ok
+test bridge::bridge_tests::ac6_query_right_aspects_differ_from_bridge_target ... ok
+test bridge::bridge_tests::frame_procedure_as_value_none_arm ... ok
+test bridge::bridge_tests::ac7_aspect_family_mismatch ... ok
+test bridge::bridge_tests::ac16_adversarial_bridge_aspect_family_mismatch ... ok
+test bridge::bridge_tests::frame_scope_as_value_none_arm ... ok
+test bridge::bridge_tests::frame_procedure_as_value_string_arm ... ok
+test bridge::bridge_tests::frame_scope_as_value_string_arm ... ok
+test bridge::bridge_tests::ac12_runner_equivalence_accepts_when_only_runner_differs ... ok
+test bridge::bridge_tests::ac11_runner_equivalence_procedure_differs_beyond_runner_id ... ok
+test bridge::bridge_tests::ac1_missing_bridge_kind ... ok
+test bridge::bridge_tests::ac4_source_aspects_cardinality_not_one ... ok
+test bridge::bridge_tests::ac8_scope_mismatch_any_field ... ok
+test bridge::bridge_tests::ac9_runner_equivalence_wrong_relation_type ... ok
+test bridge::bridge_tests::step10_grader_equivalence_procedure_differs_beyond_grader_id ... ok
+test bridge::bridge_tests::step3_source_frame_not_ai_eval_conformant ... ok
+test bridge::bridge_tests::grader_equivalence_accepts_when_only_grader_differs ... ok
+test claim::claim_tests::accepts_pass_at_k_pattern ... ok
+test claim::claim_tests::invalid_profile_example_from_spec_12_rejected ... ok
+test claim::claim_tests::accepts_valid_ai_eval_claim ... ok
+test claim::claim_tests::rejects_artifact_digest_missing ... ok
+test claim::claim_tests::rejects_artifact_digest_invalid_format ... ok
+test bridge::bridge_tests::step10_grader_equivalence_wrong_relation_type ... ok
+test claim::claim_tests::rejects_aspect_metric_mismatch ... ok
+test bridge::bridge_tests::step8b_bridge_target_aspect_differs_from_frame_aspect ... ok
+test bridge::bridge_tests::step1_source_frame_hash_mismatch ... ok
+test claim::claim_tests::rejects_multiple_aspect_refs ... ok
+test claim::claim_tests::rejects_aspect_not_in_allowed_set ... ok
+test claim::claim_tests::rejects_pass_at_zero ... ok
+test bridge::bridge_tests::step11_repeatability_procedure_mismatch ... ok
+test claim::claim_tests::rejects_subject_id_empty_string ... ok
+test claim::claim_tests::rejects_subject_id_non_string ... ok
+test claim::claim_tests::rejects_predicate_not_score ... ok
+test claim::claim_tests::rejects_subject_type_missing ... ok
+test bridge::bridge_tests::step3_target_frame_not_ai_eval_conformant ... ok
+test bridge::bridge_tests::step8a_bridge_source_aspect_differs_from_frame_aspect ... ok
+test claim::claim_tests::rejects_subject_type_not_model_build ... ok
+test claim::claim_tests::rejects_subject_without_id_as_absent ... ok
+test bridge::bridge_tests::step1_target_frame_hash_mismatch ... ok
+test claim::claim_tests::rejects_unit_out_of_set ... ok
+test claim::content_validation_tests::accepts_accuracy_aspect_with_exact_match_metric ... ok
+test claim::content_validation_tests::accepts_accuracy_aspect_with_f1_metric ... ok
+test claim::content_validation_tests::accepts_aggregation_non_empty ... ok
+test claim::content_validation_tests::accepts_tool_success_rate_aspect_metric ... ok
+test claim::content_validation_tests::rejects_aggregation_empty_string ... ok
+test claim::content_validation_tests::accepts_judge_score_aspect_metric ... ok
+test claim::content_validation_tests::accepts_pass_rate_literal_metric ... ok
+test claim::content_validation_tests::rejects_benchmark_id_missing ... ok
+test claim::content_validation_tests::rejects_content_not_object ... ok
+test claim::content_validation_tests::accepts_unit_percent ... ok
+test claim::content_validation_tests::accepts_sample_count_one ... ok
+test claim::content_validation_tests::rejects_benchmark_id_empty_string ... ok
+test claim::content_validation_tests::rejects_aggregation_non_string ... ok
+test claim::content_validation_tests::rejects_sample_count_non_integer ... ok
+test claim::content_validation_tests::rejects_value_not_number ... ok
+test claim::content_validation_tests::rejects_metric_id_missing ... ok
+test claim::cross_check_guard_tests::cross_check_rejects_when_frame_scope_has_no_benchmark_id ... ok
+test claim::is_passat_tests::pass_at_0_is_invalid ... ok
+test claim::is_passat_tests::pass_at_10_is_valid ... ok
+test claim::content_validation_tests::rejects_value_missing ... ok
+test claim::cross_check_tests::accepts_matching_claim_and_frame ... ok
+test claim::is_passat_tests::pass_at_1_is_valid ... ok
+test claim::content_validation_tests::rejects_sample_count_zero ... ok
+test claim::is_passat_tests::pass_at_empty_suffix_is_invalid ... ok
+test claim::is_passat_tests::pass_at_negative_is_invalid ... ok
+test claim::cross_check_tests::rejects_benchmark_id_mismatch ... ok
+test claim::is_passat_tests::pass_at_non_numeric_is_invalid ... ok
+test claim::cross_check_guard_tests::cross_check_rejects_frame_with_multiple_aspects ... ok
+test claim::cross_check_guard_tests::cross_check_rejects_claim_with_multiple_aspect_refs ... ok
+test claim::is_passat_tests::pass_rate_without_at_is_not_passat ... ok
+test claim::cross_check_tests::rejects_aspect_mismatch ... ok
+test claim::pairwise_gate_tests::accepts_score_delta_on_same_frame_pair ... ok
+test claim::pairwise_gate_tests::rejects_left_aspects_cardinality_not_one ... ok
+test claim::pairwise_gate_tests::accepts_repeatability_check_on_same_frame_pair ... ok
+test claim::subject_optional_fields_tests::rejects_build_id_non_string ... ok
+test claim::pairwise_gate_tests::rejects_disallowed_relation_type_on_cross_frame_pair ... ok
+test claim::subject_optional_fields_tests::rejects_provider_empty_string ... ok
+test claim::pairwise_gate_tests::rejects_predicate_not_score_same_frame_path ... ok
+test frame::frame_tests::accepts_10_2_gpqa_diamond ... ok
+test claim::subject_optional_fields_tests::rejects_model_family_non_string ... ok
+test claim::pairwise_gate_tests::rejects_predicate_not_score_cross_frame_path ... ok
+test claim::pairwise_gate_tests::rejects_relation_type_not_allowed_same_frame_path ... ok
+test claim::pairwise_gate_tests::rejects_right_aspects_cardinality_not_one ... ok
+test frame::frame_tests::accepts_10_1_mmlu_dev_accuracy ... ok
+test frame::frame_tests::accepts_all_three_required_exclusions_present ... ok
+test frame::frame_tests::accepts_reference_mmlu_frame ... ok
+test frame::frame_tests::accepts_10_3_humaneval_pass_rate ... ok
+test frame::frame_tests::rejects_grader_id_empty_string ... ok
+test frame::frame_tests::rejects_aspect_cardinality_two ... ok
+test frame::frame_tests::accepts_10_4_agentbench_tool_success ... ok
+test frame::frame_tests::rejects_missing_required_exclusion ... ok
+test frame::frame_tests::rejects_aspect_not_in_allowed_set ... ok
+test frame::frame_tests::rejects_procedure_missing_runner_id ... ok
+test frame::frame_tests::rejects_procedure_missing_grader_id ... ok
+test frame::frame_tests::rejects_procedure_not_object ... ok
+test frame::frame_tests::rejects_scope_missing_benchmark_variant ... ok
+test frame::frame_tests::rejects_scope_missing_dataset_split ... ok
+test frame::frame_tests::rejects_runner_id_empty_string ... ok
+test profile::mod_tests::default_instance_has_correct_id ... ok
+test profile::mod_tests::id_works_via_dyn_profile ... ok
+test frame::frame_tests::rejects_scope_not_object ... ok
+test profile::mod_tests::profile_id_returns_expected_string ... ok
+test profile::mod_tests::check_claim_delegates_via_dyn_profile ... ok
+test profile::mod_tests::check_bridge_applicability_via_dyn_profile_returns_ok ... ok
+
+test result: ok. 109 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/vectors_ai_eval.rs (target/debug/deps/vectors_ai_eval-e4620b7ae88b2c95)
+
+running 3 tests
+test two_mmlu_scores_incomparable_with_ai_eval_profile ... ok
+test all_single_vectors_ai_eval ... ok
+test all_pairwise_vectors_ai_eval ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests apl_ai_eval
+
+running 2 tests
+test apl-ai-eval/src/register.rs - register (line 10) ... ok
+test apl-ai-eval/src/profile.rs - profile::AiEvalProfile (line 35) ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.33s
+
+== this crate: cargo test --locked
+   Compiling proc-macro2 v1.0.107
+   Compiling unicode-ident v1.0.26
+   Compiling quote v1.0.47
+   Compiling libc v0.2.189
+   Compiling stable_deref_trait v1.2.1
+   Compiling bytes v1.12.1
+   Compiling shlex v2.0.1
+   Compiling pin-project-lite v0.2.17
+   Compiling find-msvc-tools v0.1.14
+   Compiling cfg-if v1.0.5
+   Compiling smallvec v1.16.2
+   Compiling futures-core v0.3.34
+   Compiling itoa v1.0.18
+   Compiling litemap v0.8.3
+   Compiling cc v1.5.1
+   Compiling writeable v0.6.4
+   Compiling icu_properties_data v2.3.0
+   Compiling futures-sink v0.3.34
+   Compiling icu_normalizer_data v2.3.0
+   Compiling version_check v0.9.5
+   Compiling utf8_iter v1.0.4
+   Compiling untrusted v0.9.0
+   Compiling once_cell v1.21.4
+   Compiling memchr v2.8.3
+   Compiling generic-array v0.14.7
+   Compiling http v1.5.0
+   Compiling serde_core v1.0.229
+   Compiling percent-encoding v2.3.2
+   Compiling httparse v1.10.1
+   Compiling futures-task v0.3.34
+   Compiling futures-io v0.3.34
+   Compiling subtle v2.6.1
+   Compiling http-body v1.1.0
+   Compiling typenum v1.20.1
+   Compiling slab v0.4.12
+   Compiling futures-util v0.3.34
+   Compiling syn v3.0.6
+   Compiling syn v2.0.119
+   Compiling socket2 v0.6.5
+   Compiling mio v1.2.3
+   Compiling getrandom v0.2.17
+   Compiling try-lock v0.2.5
+   Compiling autocfg v1.5.1
+   Compiling ring v0.17.14
+   Compiling rustls v0.23.45
+   Compiling tower-service v0.3.3
+   Compiling tokio v1.53.1
+   Compiling num-traits v0.2.19
+   Compiling want v0.3.1
+   Compiling form_urlencoded v1.2.2
+   Compiling tracing-core v0.1.36
+   Compiling futures-channel v0.3.34
+   Compiling atomic-waker v1.1.2
+   Compiling semver v1.0.28
+   Compiling serde v1.0.229
+   Compiling tracing v0.1.44
+   Compiling rustc_version v0.4.1
+   Compiling block-buffer v0.10.4
+   Compiling crypto-common v0.1.7
+   Compiling sync_wrapper v1.0.2
+   Compiling tower-layer v0.3.3
+   Compiling signature v2.2.0
+   Compiling core-foundation-sys v0.8.7
+   Compiling thiserror v1.0.69
+   Compiling base64 v0.23.1
+   Compiling base64 v0.22.1
+   Compiling ipnet v2.12.2
+   Compiling const-oid v0.9.6
+   Compiling iana-time-zone v0.1.65
+   Compiling curve25519-dalek v4.1.3
+   Compiling digest v0.10.7
+   Compiling bitcoin-io v0.1.101
+   Compiling zmij v1.0.23
+   Compiling ryu v1.0.23
+   Compiling synstructure v0.14.0
+   Compiling bitflags v2.13.2
+   Compiling chrono v0.4.45
+   Compiling pem v3.0.6
+   Compiling cpufeatures v0.2.17
+   Compiling http-body-util v0.1.5
+   Compiling bcder v0.7.7
+   Compiling hex v0.4.3
+   Compiling hashbrown v0.17.1
+   Compiling serde_json v1.0.151
+   Compiling arrayvec v0.7.8
+   Compiling log v0.4.34
+   Compiling equivalent v1.0.2
+   Compiling hex-conservative v0.2.3
+   Compiling sha2 v0.10.9
+   Compiling zerofrom-derive v0.1.8
+   Compiling yoke-derive v0.8.3
+   Compiling zerovec-derive v0.11.6
+   Compiling displaydoc v0.2.7
+   Compiling serde_derive v1.0.229
+   Compiling indexmap v2.14.2
+   Compiling zerofrom v0.1.8
+   Compiling yoke v0.8.3
+   Compiling hyper v1.11.1
+   Compiling tower v0.5.3
+   Compiling ed25519 v2.2.3
+   Compiling rand_core v0.6.4
+   Compiling zerotrie v0.2.5
+   Compiling zerovec v0.11.8
+   Compiling bitcoin_hashes v0.14.101
+   Compiling uuid v1.26.1
+   Compiling zeroize_derive v1.5.0
+   Compiling hyper-util v0.1.21
+   Compiling thiserror-impl v1.0.69
+   Compiling zeroize v1.9.0
+   Compiling tinystr v0.8.4
+   Compiling potential_utf v0.1.6
+   Compiling icu_locale_core v2.3.0
+   Compiling icu_collections v2.3.0
+   Compiling rustls-pki-types v1.15.1
+   Compiling der v0.7.10
+   Compiling rustls-webpki v0.103.15
+   Compiling webpki-roots v1.0.9
+   Compiling ed25519-dalek v2.2.0
+   Compiling icu_provider v2.3.1
+   Compiling spki v0.7.3
+   Compiling icu_properties v2.3.0
+   Compiling icu_normalizer v2.3.0
+   Compiling x509-certificate v0.24.0
+   Compiling serde_urlencoded v0.7.1
+   Compiling idna_adapter v1.2.2
+   Compiling idna v1.1.0
+   Compiling url v2.5.8
+   Compiling tower-http v0.6.11
+   Compiling tokio-rustls v0.26.6
+   Compiling hyper-rustls v0.27.10
+   Compiling reqwest v0.12.28
+   Compiling cryptographic-message-syntax v0.27.0
+   Compiling atl-core v0.23.1 (/Users/dzatona/Sites/MacExchange/zatona-blog-code/the-two-mmlu-scores/vendor/evidentum.io/atl-core)
+   Compiling apl-core v0.19.1 (/Users/dzatona/Sites/MacExchange/zatona-blog-code/the-two-mmlu-scores/vendor/upstream/apl/apl-core)
+   Compiling apl-ai-eval v1.0.0 (/Users/dzatona/Sites/MacExchange/zatona-blog-code/the-two-mmlu-scores/vendor/upstream/apl/apl-core/apl-ai-eval)
+   Compiling the-two-mmlu-scores v0.1.0 (/Users/dzatona/Sites/MacExchange/zatona-blog-code/the-two-mmlu-scores)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 10.36s
+     Running tests/post_outputs.rs (target/debug/deps/post_outputs-09171a1cec0e4e0b)
+
+running 15 tests
+test fixtures_are_single_line_or_indented_json_blocks ... ok
+test frame_a_hash_matches_the_hash_printed_in_claim_a ... ok
+test frame_b_hash_matches_the_hash_printed_in_claim_b ... ok
+test frame_a_hash_ignores_the_display_indentation ... ok
+test claim_b_alone_has_the_same_output_as_claim_a ... ok
+test claim_a_alone_output_is_byte_identical_to_the_post ... ok
+test adversarial_bridge_printed_in_the_post_is_the_crate_vector_bridge ... ok
+test pinned_crate_is_the_version_the_post_names ... ok
+test pair_without_bridge_matches_the_crate_vector_inputs ... ok
+test adversarial_bridge_frames_differ_only_in_the_aspect_the_post_names ... ok
+test bridged_frames_differ_only_in_runner_id_as_the_post_states ... ok
+test pair_without_bridge_output_is_byte_identical_to_the_post ... ok
+test a_repeatability_bridge_is_rejected_for_score_delta ... ok
+test pair_with_the_adversarial_bridge_output_is_byte_identical_to_the_post ... ok
+test pair_with_the_applicable_bridge_output_is_byte_identical_to_the_post ... ok
+
+test result: ok. 15 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+== this crate: cargo fmt --check
+fmt: ok
+== this crate: cargo clippy --all-targets --locked -- -D warnings
+    Checking stable_deref_trait v1.2.1
+    Checking bytes v1.12.1
+    Checking smallvec v1.16.2
+    Checking pin-project-lite v0.2.17
+    Checking cfg-if v1.0.5
+    Checking futures-core v0.3.34
+    Checking libc v0.2.189
+    Checking itoa v1.0.18
+    Checking zerofrom v0.1.8
+    Checking zeroize v1.9.0
+    Checking writeable v0.6.4
+    Checking litemap v0.8.3
+    Checking futures-sink v0.3.34
+    Checking utf8_iter v1.0.4
+    Checking yoke v0.8.3
+    Checking untrusted v0.9.0
+    Checking memchr v2.8.3
+    Checking once_cell v1.21.4
+    Checking percent-encoding v2.3.2
+    Checking rustls-pki-types v1.15.1
+    Checking icu_properties_data v2.3.0
+    Checking icu_normalizer_data v2.3.0
+    Checking subtle v2.6.1
+    Checking typenum v1.20.1
+    Checking futures-task v0.3.34
+    Checking slab v0.4.12
+    Checking zerovec v0.11.8
+    Checking zerotrie v0.2.5
+    Checking futures-io v0.3.34
+    Checking serde_core v1.0.229
+    Checking try-lock v0.2.5
+    Checking tower-service v0.3.3
+    Checking httparse v1.10.1
+    Checking want v0.3.1
+    Checking tracing-core v0.1.36
+    Checking form_urlencoded v1.2.2
+    Checking futures-channel v0.3.34
+    Checking atomic-waker v1.1.2
+    Checking sync_wrapper v1.0.2
+    Checking tower-layer v0.3.3
+    Checking const-oid v0.9.6
+    Checking http v1.5.0
+    Checking futures-util v0.3.34
+    Checking base64 v0.22.1
+    Checking tracing v0.1.44
+    Checking signature v2.2.0
+    Checking base64 v0.23.1
+    Checking ipnet v2.12.2
+    Checking mio v1.2.3
+    Checking socket2 v0.6.5
+    Checking getrandom v0.2.17
+    Checking core-foundation-sys v0.8.7
+    Checking der v0.7.10
+    Checking tinystr v0.8.4
+    Checking potential_utf v0.1.6
+    Checking ring v0.17.14
+    Checking tokio v1.53.1
+    Checking icu_collections v2.3.0
+    Checking iana-time-zone v0.1.65
+    Checking icu_locale_core v2.3.0
+    Checking generic-array v0.14.7
+    Checking num-traits v0.2.19
+    Checking http-body v1.1.0
+    Checking webpki-roots v1.0.9
+    Checking ryu v1.0.23
+    Checking bitflags v2.13.2
+    Checking thiserror v1.0.69
+    Checking http-body-util v0.1.5
+    Checking pem v3.0.6
+    Checking crypto-common v0.1.7
+    Checking block-buffer v0.10.4
+    Checking spki v0.7.3
+    Checking cpufeatures v0.2.17
+    Checking bcder v0.7.7
+    Checking digest v0.10.7
+    Checking hex v0.4.3
+    Checking chrono v0.4.45
+    Checking log v0.4.34
+    Checking equivalent v1.0.2
+    Checking icu_provider v2.3.1
+    Checking arrayvec v0.7.8
+    Checking hashbrown v0.17.1
+    Checking sha2 v0.10.9
+    Checking hex-conservative v0.2.3
+    Checking curve25519-dalek v4.1.3
+    Checking icu_properties v2.3.0
+    Checking icu_normalizer v2.3.0
+    Checking rustls-webpki v0.103.15
+    Checking bitcoin-io v0.1.101
+    Checking zmij v1.0.23
+    Checking indexmap v2.14.2
+    Checking ed25519 v2.2.3
+    Checking rustls v0.23.45
+    Checking rand_core v0.6.4
+    Checking bitcoin_hashes v0.14.101
+    Checking ed25519-dalek v2.2.0
+    Checking serde v1.0.229
+    Checking uuid v1.26.1
+    Checking x509-certificate v0.24.0
+    Checking serde_urlencoded v0.7.1
+    Checking serde_json v1.0.151
+    Checking idna_adapter v1.2.2
+    Checking idna v1.1.0
+    Checking url v2.5.8
+    Checking hyper v1.11.1
+    Checking tower v0.5.3
+    Checking tower-http v0.6.11
+    Checking hyper-util v0.1.21
+    Checking tokio-rustls v0.26.6
+    Checking hyper-rustls v0.27.10
+    Checking reqwest v0.12.28
+    Checking cryptographic-message-syntax v0.27.0
+    Checking atl-core v0.23.1 (/Users/dzatona/Sites/MacExchange/zatona-blog-code/the-two-mmlu-scores/vendor/evidentum.io/atl-core)
+    Checking apl-core v0.19.1 (/Users/dzatona/Sites/MacExchange/zatona-blog-code/the-two-mmlu-scores/vendor/upstream/apl/apl-core)
+    Checking apl-ai-eval v1.0.0 (/Users/dzatona/Sites/MacExchange/zatona-blog-code/the-two-mmlu-scores/vendor/upstream/apl/apl-core/apl-ai-eval)
+    Checking the-two-mmlu-scores v0.1.0 (/Users/dzatona/Sites/MacExchange/zatona-blog-code/the-two-mmlu-scores)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 4.71s

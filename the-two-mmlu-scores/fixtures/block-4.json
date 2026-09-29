@@ -1,0 +1,22 @@
+{
+  "version": "0.1",
+  "observer": { "id": "acme-eval-lab" },
+  "procedure": {
+    "runner_id": "lm-eval-harness@0.4.2",
+    "grader_id": "exact-match-v1",
+    "prompt_protocol": "zero-shot-mcq-v1"
+  },
+  "aspect": ["accuracy"],
+  "scope": {
+    "benchmark_id": "mmlu",
+    "benchmark_variant": "default",
+    "dataset_split": "dev",
+    "subset": "all"
+  },
+  "invariance": ["score-object-serialization"],
+  "exclusions": [
+    "no-production-readiness-claim",
+    "no-deployment-safety-claim",
+    "no-out-of-scope-generalization-claim"
+  ]
+}

@@ -15,6 +15,12 @@ listings were extracted and checksummed.
 | [`intel-tdx-remote-attestation-verifier`](intel-tdx-remote-attestation-verifier/) | [zatona.dev/blog/intel-tdx-remote-attestation-verifier](https://zatona.dev/blog/intel-tdx-remote-attestation-verifier) |
 | [`tamper-evident-audit-logs`](tamper-evident-audit-logs/) | [zatona.dev/blog/tamper-evident-audit-logs](https://zatona.dev/blog/tamper-evident-audit-logs) |
 | [`ai-agent-audit-trail`](ai-agent-audit-trail/) | [zatona.dev/blog/ai-agent-audit-trail](https://zatona.dev/blog/ai-agent-audit-trail) |
+| [`the-two-mmlu-scores`](the-two-mmlu-scores/) | [zatona.dev/blog/the-two-mmlu-scores](https://zatona.dev/blog/the-two-mmlu-scores) |
+
+`the-two-mmlu-scores` differs from the others: the post prints JSON fixtures and
+verifier outputs rather than Rust listings, so the crate holds the JSON blocks
+byte-identical and checks them against a real run of the verifier at a pinned
+commit (`scripts/fetch-pinned.sh` fetches the pinned sources first).
 
 ## How a listing gets here
 
@@ -62,6 +68,7 @@ cd rfc-3161-vs-opentimestamps && cargo test
 cd ../intel-tdx-remote-attestation-verifier && cargo test
 cd ../tamper-evident-audit-logs && cargo test
 cd ../ai-agent-audit-trail && cargo test
+cd ../the-two-mmlu-scores && sh scripts/fetch-pinned.sh && cargo test
 ```
 
 `.github/workflows/ci.yml` does the same, per crate, on the pinned

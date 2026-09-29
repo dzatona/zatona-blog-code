@@ -1,0 +1,1 @@
+{"version":"0.1","bridge_kind":"runner-equivalence","source_frame":{"hash":"<FRAME_HASH:0>"},"target_frame":{"hash":"<FRAME_HASH:1>"},"comparison_scope":{"source_aspects":["accuracy"],"target_aspects":["judge-score"],"relation_type":"score-delta"},"assumptions":["all MMLU results are interchangeable"],"losses":[]}

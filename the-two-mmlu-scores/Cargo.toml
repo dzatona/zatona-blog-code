@@ -1,0 +1,17 @@
+[package]
+name = "the-two-mmlu-scores"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.85"
+license = "Apache-2.0"
+description = "Fixtures and byte-for-byte output checks for the zatona.dev post \"The Two MMLU Scores\""
+publish = false
+
+# Both upstream trees are fetched at pinned commits by scripts/fetch-pinned.sh
+# into ./vendor (git-ignored). apl-core declares its ATL dependency as the path
+# ../../../evidentum.io/atl-core, which resolves to ./vendor/evidentum.io/atl-core
+# from ./vendor/upstream/apl/apl-core.
+[dependencies]
+apl-core = { path = "vendor/upstream/apl/apl-core" }
+apl-ai-eval = { path = "vendor/upstream/apl/apl-core/apl-ai-eval" }
+serde_json = { version = "1", features = ["preserve_order"] }

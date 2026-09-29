@@ -15,6 +15,7 @@ jobs:
           - intel-tdx-remote-attestation-verifier
           - tamper-evident-audit-logs
           - ai-agent-audit-trail
+          - the-two-mmlu-scores
     steps:
       - uses: actions/checkout@v4
 
@@ -22,6 +23,10 @@ jobs:
         uses: dtolnay/rust-toolchain@1.95.0
         with:
           components: rustfmt, clippy
+
+      - name: Fetch pinned upstream sources (the-two-mmlu-scores only)
+        if: matrix.crate == 'the-two-mmlu-scores'
+        run: sh the-two-mmlu-scores/scripts/fetch-pinned.sh
 
       - name: Cache cargo registry and build
         uses: actions/cache@v4
